@@ -294,14 +294,18 @@ If the new path's directories does not exist, create them."
   :defer t
   :bind
   (("C-x t t" . treemacs)
-   ("C-x t d" . treemacs-select-directory))
+   ("C-x t d" . treemacs-select-directory)
+   ("C-x t p" . treemacs-add-and-display-current-project-exclusively))
   :config
-  ;; Optional: don't let treemacs steal focus
-  ;; (setq treemacs-is-never-other-window t)
-  ;; Optional: auto-follow the buffer
   (treemacs-follow-mode t)
   (treemacs-filewatch-mode t)
-  (treemacs-git-mode 'extended))
+  (treemacs-git-mode 'extended)
+  ;; Optional: auto-show Treemacs for the current project when switching projects
+  (add-hook 'projectile-after-switch-project-hook
+	    #'treemacs-display-current-project-exclusively))
+
+;; Open project view on startup
+(treemacs-add-and-display-current-project-exclusively)
 
 ;; Optional: Projectile integration with Treemacs
 (use-package treemacs-projectile
@@ -312,3 +316,33 @@ If the new path's directories does not exist, create them."
   :after treemacs
   :config
   (treemacs-load-theme "all-the-icons"))
+
+(use-package ivy
+  :diminish
+  :bind (("C-s" . swiper) ; search in buffer
+	 :map ivy-minibuffer-map
+	 ("TAB" . ivy-alt-done) ; alternative completion with TAB
+	 ("C-l" . ivy-alt-done)
+	 ("C-j" . ivy-next-line)
+	 ("C-k" . ivy-previous-line)
+	 :map ivy-switch-buffer-map
+	 ("C-k" . ivy-previous-line)
+	 ("C-l" . ivy-done)
+	 ("C-d" . ivy-switch-buffer-kill)
+	 :map ivy-reverse-i-search-map
+	 ("C-k" . ivy-previous-line)
+	 ("C-d" . ivy-reverse-i-search-kill))
+  :init
+  (ivy-mode 1)
+  :config
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) "))
+
+;; Counsel adds useful commands built on top of Ivy
+(use-package counsel
+  :after ivy
+  :config (counsel-mode))
+
+;; Swiper is already bound in the Ivy block above to C-s, but you can also:
+(use-package swiper
+  :after ivy)
