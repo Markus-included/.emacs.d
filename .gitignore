@@ -1,3 +1,4 @@
+# -*- mode: gitignore; -*-
 /.cache/
 /eln-cache/
 /elpa/
@@ -6,7 +7,10 @@
 /auto-save-list/
 /eshell/
 /projects
-[21~]
 /url/
 /emacs-backup/
-[21~]
+/games/
+projectile-bookmarks.eld
+*~
+\#*\#
+.\#*

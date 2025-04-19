@@ -44,8 +44,23 @@
 ;; You can simply uncomment the following if you'd like to get started with
 ;; MELPA packages quickly:
 ;;
-;; (with-eval-after-load 'package
-;;   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
+(require 'package)
+(setq package-enable-at-startup nil)
+
+;; Add MELPA
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/") t)
+
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Automatically install packages declared with use-package
+(setq use-package-always-ensure t)
+
+
 
 ;; If you want to turn off the welcome screen, uncomment this
 ;(setopt inhibit-splash-screen t)
@@ -213,10 +228,10 @@ If the new path's directories does not exist, create them."
 
 ;; UI/UX enhancements mostly focused on minibuffer and autocompletion interfaces
 ;; These ones are *strongly* recommended!
-;(load-file (expand-file-name "extras/base.el" user-emacs-directory))
+(load-file (expand-file-name "extras/base.el" user-emacs-directory))
 
 ;; Packages for software development
-;(load-file (expand-file-name "extras/dev.el" user-emacs-directory))
+(load-file (expand-file-name "extras/dev.el" user-emacs-directory))
 
 ;; Vim-bindings in Emacs (evil-mode configuration)
 ;(load-file (expand-file-name "extras/vim-like.el" user-emacs-directory))
@@ -255,5 +270,45 @@ If the new path's directories does not exist, create them."
 
 (setq gc-cons-threshold (or bedrock--initial-gc-threshold 800000))
 
-(load-file "~/.emacs.d/extras/base.el")
-(load-file "~/.emacs.d/extras/dev.el")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                                        ;;;
+;;;   Project managment                    ;;;
+;;;                                        ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Projectile: project management
+(use-package projectile
+  :init
+  (projectile-mode +1)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :config
+  ;; Set where to search for projects
+  (setq projectile-project-search-path '("~/projects"))
+  ;; Optional: Use Ivy for completion
+  (setq projectile-completion-system 'ivy))
+
+;; Treemacs: file tree sidebar
+(use-package treemacs
+  :defer t
+  :bind
+  (("C-x t t" . treemacs)
+   ("C-x t d" . treemacs-select-directory))
+  :config
+  ;; Optional: don't let treemacs steal focus
+  ;; (setq treemacs-is-never-other-window t)
+  ;; Optional: auto-follow the buffer
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-git-mode 'extended))
+
+;; Optional: Projectile integration with Treemacs
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+
+;; Optional: pretty icons (requires font installation)
+(use-package treemacs-all-the-icons
+  :after treemacs
+  :config
+  (treemacs-load-theme "all-the-icons"))
