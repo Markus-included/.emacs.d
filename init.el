@@ -285,7 +285,7 @@ If the new path's directories does not exist, create them."
   ("C-c p" . projectile-command-map)
   :config
   ;; Set where to search for projects
-  (setq projectile-project-search-path '("~/projects"))
+  (setq projectile-project-search-path '("~"))
   ;; Optional: Use Ivy for completion
   (setq projectile-completion-system 'ivy))
 
@@ -303,9 +303,6 @@ If the new path's directories does not exist, create them."
   ;; Optional: auto-show Treemacs for the current project when switching projects
   (add-hook 'projectile-after-switch-project-hook
 	    #'treemacs-display-current-project-exclusively))
-
-;; Open project view on startup
-(treemacs-add-and-display-current-project-exclusively)
 
 ;; Optional: Projectile integration with Treemacs
 (use-package treemacs-projectile
