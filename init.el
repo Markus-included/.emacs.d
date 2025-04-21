@@ -22,9 +22,15 @@
 ;;;  - Built-in customization framework
 
 ;;; Guardrail
-
 (when (< emacs-major-version 29)
   (error "Emacs Bedrock only works with Emacs 29 and newer; you have version %s" emacs-major-version))
+
+;;; Debug use-package
+(when init-file-debug
+  (setq use-package-verbose t
+        use-package-expand-minimally nil
+        use-package-compute-statistics t
+        debug-on-error t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -239,7 +245,7 @@ If the new path's directories does not exist, create them."
 ;; Org-mode configuration
 ;; WARNING: need to customize things inside the elisp file before use! See
 ;; the file extras/org-intro.txt for help.
-;(load-file (expand-file-name "extras/org.el" user-emacs-directory))
+(load-file (expand-file-name "extras/org.el" user-emacs-directory))
 
 ;; Email configuration in Emacs
 ;; WARNING: needs the `mu' program installed; see the elisp file for more
@@ -343,3 +349,24 @@ If the new path's directories does not exist, create them."
 ;; Swiper is already bound in the Ivy block above to C-s, but you can also:
 (use-package swiper
   :after ivy)
+
+(unless window-system
+  (xterm-mouse-mode 1)
+  (global-set-key [mouse-4] (lambda () (interactive) (scroll-down 1)))
+  (global-set-key [mouse-5] (lambda () (interactive) (scroll-up 1))))
+
+(setq mouse-drag-copy-region t)
+
+;; Copy/Paste from X11 clipboard in terminal emacs
+(unless (display-graphic-p)
+  (defun my-copy-to-clipboard (text &optional push)
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "xsel" "*Messages*" "xsel" "--clipboard" "--input")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+
+  (defun my-paste-from-clipboard ()
+    (shell-command-to-string "xsel --clipboard --output"))
+
+  (setq interprogram-cut-function 'my-copy-to-clipboard)
+  (setq interprogram-paste-function 'my-paste-from-clipboard))
