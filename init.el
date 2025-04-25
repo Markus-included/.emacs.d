@@ -370,3 +370,16 @@ If the new path's directories does not exist, create them."
 
   (setq interprogram-cut-function 'my-copy-to-clipboard)
   (setq interprogram-paste-function 'my-paste-from-clipboard))
+
+(use-package auctex
+  :ensure t)
+ 	
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+
+(setq-default TeX-master nil)
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))
